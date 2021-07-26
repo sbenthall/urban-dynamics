@@ -1,3 +1,5 @@
+extensions [ rnd ]
+
 globals [
 
 ]
@@ -42,11 +44,11 @@ end
 
 to go
 
-  ask max-one-of patches [j-demand] [
+  ask rnd:weighted-one-of patches [j-demand] [
     build
   ]
 
-  ask max-one-of patches [p-demand] [
+  ask rnd:weighted-one-of patches [p-demand] [
     build
   ]
 
