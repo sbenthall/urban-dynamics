@@ -15,6 +15,9 @@ patches-own [
 breed [jobs job]
 breed [people person]
 
+people-own [
+
+]
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; Setup Procedures ;;;
@@ -48,7 +51,8 @@ to go
     build
   ]
 
-  ask rnd:weighted-one-of patches [p-demand] [
+  let income exp random-normal income-mu income-sigma
+  ask rnd:weighted-one-of patches [min (list p-demand income)] [
     build
   ]
 
@@ -131,6 +135,7 @@ to work
 end
 
 to eat
+  ;; lifecycle method for people
   ifelse count my-links < 1 [
     if random 10 < 1 [die]
   ] [
@@ -144,6 +149,7 @@ to eat
 end
 
 to survive
+  ;; lifecycle method for jobs
   ifelse count my-links < 1 [
     if random 10 < 1 [die]
   ] [
@@ -157,10 +163,13 @@ to survive
 end
 
 to set-demand
-  let j-demand-outer sum [1 - count my-links] of (people in-radius walk-radius) / 2.0
-  let j-demand-inner sum [1 - count my-links] of (people in-radius (walk-radius / 2)) / 2.0
+  ;; compute demand for patch
+  ;; demand for jobs is correlated with _emplopyed_ people in area (services, human capital).
+  let j-demand-outer sum [count my-links] of (people in-radius walk-radius) / 2.0
+  let j-demand-inner sum [count my-links] of (people in-radius (walk-radius / 2)) / 2.0
   set j-demand min (list ( j-demand-outer + j-demand-inner) 200)
 
+  ;; demand for people is correlated with unfilled jobs
   let p-demand-outer sum [1 - count my-links] of (jobs in-radius walk-radius) / 2.0
   let p-demand-inner sum [1 - count my-links] of (jobs in-radius (walk-radius / 2)) / 2.0
   set p-demand min (list ( p-demand-outer + p-demand-inner) 200)
@@ -230,10 +239,10 @@ NIL
 1
 
 SLIDER
-27
-71
-199
-104
+19
+63
+191
+96
 walk-radius
 walk-radius
 1
@@ -264,6 +273,36 @@ PENS
 "people" 1.0 0 -2674135 true "" "plot count people"
 "jobs-max" 1.0 0 -13791810 true "" "plot sum [j-max] of patches"
 "people-max" 1.0 0 -955883 true "" "plot sum [p-max] of patches"
+
+SLIDER
+18
+104
+134
+137
+income-mu
+income-mu
+0
+10
+4.0
+1
+1
+NIL
+HORIZONTAL
+
+SLIDER
+18
+145
+133
+178
+income-sigma
+income-sigma
+0
+10
+3.0
+1
+1
+NIL
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
